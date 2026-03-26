@@ -7,7 +7,7 @@ from linebot.v3.messaging import (
     ReplyMessageRequest, TextMessage
 )
 from linebot.v3.webhooks import MessageEvent, TextMessageContent
-import google.generativeai as genai
+from google import genai
 
 app = Flask(__name__)
 
@@ -17,8 +17,7 @@ GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 
 configuration = Configuration(access_token=LINE_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(LINE_CHANNEL_SECRET)
-genai.configure(api_key=GEMINI_API_KEY)
-gemini = genai.GenerativeModel("gemini-1.5-flash")
+gemini_client = genai.Client(api_key=GEMINI_API_KEY)
 
 
 # ──────────────────────────────────────────
@@ -187,9 +186,13 @@ SYSTEM_PROMPT = f"""你是一位專業的信用卡刷卡顧問，使用者會告
 def get_advice(text: str) -> str:
     try:
         prompt = f"{SYSTEM_PROMPT}\n\n使用者說：{text}"
-        response = gemini.generate_content(prompt)
+        response = gemini_client.models.generate_content(
+            model="gemini-1.5-flash",
+            contents=prompt
+        )
         return response.text
-    except Exception:
+    except Exception as e:
+        print(f"Gemini error: {e}")
         return get_advice_fallback(text)
 
 
