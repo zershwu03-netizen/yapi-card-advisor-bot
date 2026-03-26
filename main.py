@@ -187,7 +187,7 @@ def get_advice(text: str) -> str:
     try:
         prompt = f"{SYSTEM_PROMPT}\n\n使用者說：{text}"
         response = gemini_client.models.generate_content(
-            model="gemini-1.5-flash",
+            model="gemini-2.5-flash",
             contents=prompt
         )
         return response.text
