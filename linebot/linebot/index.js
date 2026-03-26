@@ -14,7 +14,7 @@ const app = express();
 app.use(express.json({ verify: line.middleware(config).rawBodyParser }));
 
 // ── Webhook 接收 ──────────────────────────────────────────
-app.post("/webhook", line.middleware(config), async (req, res) => {
+app.post("/webhook", async (req, res) => {
   res.sendStatus(200);
   const events = req.body.events || [];
   for (const event of events) {
